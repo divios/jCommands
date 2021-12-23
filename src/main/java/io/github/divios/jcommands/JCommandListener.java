@@ -1,10 +1,8 @@
 package io.github.divios.jcommands;
 
-import com.sun.org.apache.xpath.internal.Arg;
 import io.github.divios.jcommands.arguments.Argument;
 import io.github.divios.jcommands.utils.CommandMapUtil;
 import io.github.divios.jcommands.utils.Value;
-import jdk.jpackage.internal.Log;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;

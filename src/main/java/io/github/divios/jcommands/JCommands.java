@@ -1,12 +1,7 @@
 package io.github.divios.jcommands;
 
 import com.google.common.base.Preconditions;
-import io.github.divios.jcommands.arguments.types.BooleanArgument;
-import io.github.divios.jcommands.arguments.types.PlayerArgument;
-import io.github.divios.jcommands.arguments.types.StringArgument;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.Arrays;
 
 @SuppressWarnings("unused")
 public final class JCommands {
