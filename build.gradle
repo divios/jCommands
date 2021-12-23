@@ -11,6 +11,8 @@ targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    mavenLocal()
+    maven { url = "https://jitpack.io" }
     maven {
         name = 'spigotmc-repo'
         url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
@@ -46,10 +48,12 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId = 'com.github.divios'
-            artifactId = 'jcommands'
+            artifactId = 'jCommands'
             version = '1.0'
 
             from components.java
         }
     }
 }
+
+compileJava.dependsOn(clean)
