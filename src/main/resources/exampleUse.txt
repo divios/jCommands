@@ -1,0 +1,24 @@
+
+
+
+JCommand.create("test")
+        .withAliases("txt", "tx")
+        .assertPermission("some.random.permission")
+        .withArguments(new StringArgument("oke"), new PlayerArgument)
+        .withSubcommand(getCommand())
+        .assertUsage("do something")
+        .assertRequirements(sender -> true)
+        .executesConsole((console, args) {
+            // do somethings
+            }
+        })
+        .executesPlayer((player, args) -> {
+            //do something
+            }
+        }
+        .register();
+
+
+
+        /ds import
+        shopGui+ shop

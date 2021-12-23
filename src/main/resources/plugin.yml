@@ -1,0 +1,4 @@
+name: JCommands
+version: '${version}'
+main: io.github.divios.jcommands.JCommands
+api-version: 1.13

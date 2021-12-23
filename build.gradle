@@ -1,0 +1,55 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+group = 'io.github.divios'
+version = '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8 // java 8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+    maven {
+        name = 'sonatype'
+        url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+}
+
+dependencies {
+    implementation 'org.jetbrains:annotations:22.0.0'
+    compileOnly 'org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT'
+
+    testImplementation('junit:junit:4.13.2')
+    testImplementation "org.mockito:mockito-core:1.9.5"
+    testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
+    testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
+    testImplementation 'com.github.seeseemelk:MockBukkit-v1.16:1.5.2'
+}
+
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'com.github.divios'
+            artifactId = 'jcommands'
+            version = '1.0'
+
+            from components.java
+        }
+    }
+}
