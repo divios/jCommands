@@ -9,7 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.Arrays;
 
 @SuppressWarnings("unused")
-public final class JCommands extends JavaPlugin{
+public final class JCommands {
 
     private static JavaPlugin providerPlugin;
 
@@ -20,34 +20,6 @@ public final class JCommands extends JavaPlugin{
     static void registerCommand(JCommand command) {
         Preconditions.checkNotNull(providerPlugin, "No provider plugin was registered on load");
         new JCommandListener(providerPlugin, command);
-    }
-
-    @Override
-    public void onEnable() {
-        register(this);
-
-        JCommand.create("jcommand")
-                .withAliases("jcmd", "jc")
-                .assertPermission("jcommands.admin")
-                .assertUsage("<nothing>")
-                .withArguments(new BooleanArgument())
-                .withSubcommands(JCommand.create("spawn")
-                        .withArguments(new PlayerArgument())
-                        .assertUsage("<player>")
-                        .executesPlayer((player, values) -> values.get(1).getAsPlayer().sendMessage("spawn was executed"))
-                )
-                .withSubcommands(JCommand.create("open")
-                        .assertUsage("<shop>")
-                        .withArguments(new StringArgument()
-                                .overrideSuggestions(() -> Arrays.asList("drops", "block", "equipment"), true)
-                        )
-                        .executesPlayer((player, values) -> player.sendMessage(values.get(0).getAsString()))
-                )
-                .executesPlayer((player, values) -> {
-                    player.sendMessage("default was executed");
-                })
-                .register();
-
     }
 
 }
