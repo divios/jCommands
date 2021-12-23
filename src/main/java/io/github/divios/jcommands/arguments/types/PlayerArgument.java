@@ -1,8 +1,8 @@
 package io.github.divios.jcommands.arguments.types;
 
-import io.github.divios.jcommands.arguments.Argument;
 import io.github.divios.jcommands.utils.Primitives;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,21 +14,23 @@ public class PlayerArgument extends abstractArgument<Player> {
 
     public PlayerArgument() {
         super(() -> Bukkit.getOnlinePlayers().stream()
-                .map(Player::getDisplayName)
+                .map(player -> ChatColor.stripColor(player.getDisplayName()))
                 .collect(Collectors.toList()));
+        super.setAsImperative();
     }
 
     @Override
-    public boolean isValidArgument(String s) {
+    protected boolean isValidArgumentAbstract(String s) {
         return Primitives.isPlayer(s);
     }
 
     @Override
-    public Argument overrideSuggestions(@NotNull Supplier<List<Player>> playerSuggestions) {
+    public abstractArgument<Player> overrideSuggestions(@NotNull Supplier<List<Player>> playerSuggestions, boolean imperative) {
         super.setSuggestions(() -> playerSuggestions.get().stream()
-                .map(Player::getDisplayName)
+                .map(Player::getName)
                 .collect(Collectors.toList())
         );
+        super.imperative = imperative;
         return this;
     }
 

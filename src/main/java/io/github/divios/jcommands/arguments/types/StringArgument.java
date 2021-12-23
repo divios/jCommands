@@ -1,25 +1,26 @@
 package io.github.divios.jcommands.arguments.types;
 
-import io.github.divios.jcommands.arguments.Argument;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
 public class StringArgument extends abstractArgument<String> {
 
     public StringArgument() {
-        super(() -> null);
+        super(ArrayList::new);
     }
 
     @Override
-    public boolean isValidArgument(String o) {
+    protected boolean isValidArgumentAbstract(String o) {
         return true;
     }
 
     @Override
-    public Argument overrideSuggestions(@NotNull Supplier<List<String>> stringSuggestions) {
+    public abstractArgument<String> overrideSuggestions(@NotNull Supplier<List<String>> stringSuggestions, boolean imperative) {
         super.setSuggestions(stringSuggestions);
+        super.imperative = imperative;
         return this;
     }
 

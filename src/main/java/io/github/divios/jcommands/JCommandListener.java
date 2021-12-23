@@ -1,8 +1,10 @@
 package io.github.divios.jcommands;
 
+import com.sun.org.apache.xpath.internal.Arg;
 import io.github.divios.jcommands.arguments.Argument;
 import io.github.divios.jcommands.utils.CommandMapUtil;
 import io.github.divios.jcommands.utils.Value;
+import jdk.jpackage.internal.Log;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,6 +21,7 @@ class JCommandListener implements TabCompleter, CommandExecutor {
 
     JCommandListener(JavaPlugin plugin, JCommand command) {
         this.command = command;
+
 
         CommandMapUtil.registerCommand(plugin, this, command.getAliases());
     }
@@ -45,8 +48,20 @@ class JCommandListener implements TabCompleter, CommandExecutor {
         } else {
             List<String> toComplete = new ArrayList<>();
             for (JCommand subCommand : subCommands) {
+
+                boolean isValid = true;
+                for (int i = arguments.size(); i < args.length - 1; i++) {          // Check if previous arguments of subcommand are valid
+                    Argument argument;
+                    if (!((argument = subCommand.getArguments().get(i - arguments.size())) != null
+                            && argument.isValidArgument(args[i]))) {
+                        isValid = false;
+                        break;
+                    }
+                }
+                if (!isValid) continue;
+
                 List<String> aux;
-                if ((aux = callTabComplete(sender, subCommand, Arrays.copyOfRange(args, arguments.size() - 1, pos))) != null)
+                if ((aux = callTabComplete(sender, subCommand, Arrays.copyOfRange(args, arguments.size(), args.length))) != null)
                     toComplete.addAll(aux);
             }
             return getFilteredTabComplete(toComplete, args[pos]);
@@ -54,7 +69,7 @@ class JCommandListener implements TabCompleter, CommandExecutor {
     }
 
     private List<String> getFilteredTabComplete(List<String> tabCompletes, String filter) {
-        return tabCompletes.stream()
+        return tabCompletes == null ? null : tabCompletes.stream()
                 .filter(s -> s.startsWith(filter))
                 .collect(Collectors.toList());
     }
@@ -87,36 +102,33 @@ class JCommandListener implements TabCompleter, CommandExecutor {
             }
         }
 
-        if (command.getSubCommands().isEmpty()) {   // If not subcommands we are good to go
-            if (sender instanceof Player) command.getPlayerExecutor().accept((Player) sender, castArgs(args));
+        if (args.length == command.getArguments().size()) {   // If is the command we are good to go
+            if (sender instanceof Player)
+                command.getPlayerExecutor().accept((Player) sender, castArgs(command, args));
             else if (sender instanceof ConsoleCommandSender)
-                command.getConsoleExecutor().accept((ConsoleCommandSender) sender, castArgs(args));
-            else command.getDefaultExecutor().accept(sender, castArgs(args));
+                command.getConsoleExecutor().accept((ConsoleCommandSender) sender, castArgs(command, args));
+            else
+                command.getDefaultExecutor().accept(sender, castArgs(command, args));
             return true;
         } else {                                    // Check if the call can be passed to subCommand
-            String[] newArgs = Arrays.copyOfRange(args, command.getArguments().size() - 1, args.length - 1);
+            String[] newArgs = Arrays.copyOfRange(args, command.getArguments().size(), args.length);
+            boolean result = false;
             for (JCommand subCommand : command.getSubCommands()) {
                 if (newArgs.length < subCommand.getArguments().size()) continue;
 
-                boolean isValid = false;
-                for (int i = 0; i < subCommand.getArguments().size(); i++) {
-                    if (!subCommand.getArguments().get(i).isValidArgument(newArgs[i])) {
-                        isValid = true;
-                        break;
-                    }
-                }
-
-                if (isValid) continue;
-                return callCommand(sender, subCommand, newArgs);
+                Argument argument;
+                if ((argument = subCommand.getArguments().get(0)) != null && argument.isValidArgument(newArgs[0]))
+                    result |= callCommand(sender, subCommand, newArgs);
             }
+            return result;
         }
 
-        if (command.getUsage() != null) sender.sendMessage(command.getUsage());
-        return false;
     }
 
-    private List<Value> castArgs(String[] args) {
-        return Arrays.stream(args).map(Value::ofString).collect(Collectors.toList());
+    private List<Value> castArgs(JCommand command, String[] args) {
+        return Arrays.stream(command.isSubCommand() ? Arrays.copyOfRange(args, 1, args.length) : args)
+                .map(Value::ofString)
+                .collect(Collectors.toList());
     }
 
 }

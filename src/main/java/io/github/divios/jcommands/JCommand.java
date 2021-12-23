@@ -1,6 +1,7 @@
 package io.github.divios.jcommands;
 
 import io.github.divios.jcommands.arguments.Argument;
+import io.github.divios.jcommands.arguments.types.StringArgument;
 import io.github.divios.jcommands.utils.Value;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -16,16 +17,21 @@ import java.util.function.Predicate;
 public class JCommand {
 
     private final String name;
+    private boolean isSubcommand = false;
     private final List<String> aliases = new ArrayList<>();
     private Permission permission = new Permission("");
-    private Consumer<CommandSender> invalidPermission = player -> {};
-    private final List<Argument> arguments = new ArrayList<>();
+    private Consumer<CommandSender> invalidPermission = player -> {
+    };
+    private final LinkedList<Argument> arguments = new LinkedList<>();
     private final List<JCommand> subCommands = new ArrayList<>();
     private String usage;
     private final List<Predicate<CommandSender>> requirements = new ArrayList<>();
-    private BiConsumer<Player, List<Value>> playerExecutor = (player, args) -> {};
-    private BiConsumer<ConsoleCommandSender, List<Value>> consoleExecutor = (sender, args) -> {};
-    private BiConsumer<CommandSender, List<Value>> defaultExecutor = (commandSender, args) -> {};
+    private BiConsumer<Player, List<Value>> playerExecutor = (player, args) -> {
+    };
+    private BiConsumer<ConsoleCommandSender, List<Value>> consoleExecutor = (sender, args) -> {
+    };
+    private BiConsumer<CommandSender, List<Value>> defaultExecutor = (commandSender, args) -> {
+    };
 
 
     public static JCommand create(String name) {
@@ -37,7 +43,12 @@ public class JCommand {
         aliases.add(name);
     }
 
-    public JCommand withAliases(String ...aliases) {
+    private JCommand isSubcommand() {
+        isSubcommand = true;
+        return this;
+    }
+
+    public JCommand withAliases(String... aliases) {
         this.aliases.addAll(Arrays.asList(aliases));
         return this;
     }
@@ -47,7 +58,8 @@ public class JCommand {
     }
 
     public JCommand assertPermission(Permission permission) {
-        return assertPermission(permission, sender -> {});
+        return assertPermission(permission, sender -> {
+        });
     }
 
     private JCommand assertPermission(String permissionStr, Consumer<CommandSender> invalidPermission) {
@@ -65,16 +77,18 @@ public class JCommand {
         return this;
     }
 
-    public JCommand withArguments(Argument...arguments) {
+    public JCommand withArguments(Argument... arguments) {
         return withArguments(Arrays.asList(arguments));
     }
 
-    public JCommand withSubcommands(Collection<? extends JCommand> commands) {
-        this.subCommands.addAll(commands);
+    public JCommand withSubcommands(Collection<? extends JCommand> subCommands) {
+        for (JCommand subCommand : subCommands) {
+            this.subCommands.add(flatCommand(subCommand).isSubcommand());
+        }
         return this;
     }
 
-    public JCommand withSubcommands(JCommand ...commands) {
+    public JCommand withSubcommands(JCommand... commands) {
         return withSubcommands(Arrays.asList(commands));
     }
 
@@ -116,6 +130,8 @@ public class JCommand {
         return name;
     }
 
+    boolean isSubCommand() { return isSubcommand; }
+
     public List<String> getAliases() {
         return aliases;
     }
@@ -125,7 +141,8 @@ public class JCommand {
     }
 
     public Consumer<CommandSender> getInvalidPermissionAction() {
-        return invalidPermission == null ? sender -> {} : invalidPermission;
+        return invalidPermission == null ? sender -> {
+        } : invalidPermission;
     }
 
     public List<Argument> getArguments() {
@@ -155,4 +172,37 @@ public class JCommand {
     public BiConsumer<CommandSender, List<Value>> getDefaultExecutor() {
         return defaultExecutor;
     }
+
+
+    /**
+     * Adds the name of a subcommand as an argument.
+     *
+     * @param command The subcommand to execute this operation on.
+     * @return the new subcommand with a new StringArgument.
+     */
+    private JCommand flatCommand(JCommand command) {
+        command.arguments.addFirst(new StringArgument()
+                .setAsImperative()
+                .overrideSuggestions(() -> Collections.singletonList(command.name), true)
+        );
+        return command;
+    }
+
+    @Override
+    public String toString() {
+        return "JCommand{" +
+                "name='" + name + '\'' +
+                ", aliases=" + aliases +
+                ", permission=" + permission +
+                ", invalidPermission=" + invalidPermission +
+                ", arguments=" + arguments +
+                ", subCommands=" + subCommands +
+                ", usage='" + usage + '\'' +
+                ", requirements=" + requirements +
+                ", playerExecutor=" + playerExecutor +
+                ", consoleExecutor=" + consoleExecutor +
+                ", defaultExecutor=" + defaultExecutor +
+                '}';
+    }
+
 }

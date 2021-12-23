@@ -8,13 +8,21 @@ import java.util.function.Supplier;
 
 public abstract class abstractArgument<T> implements Argument {
 
-    Supplier<List<String>> suggestions;
+    protected Supplier<List<String>> suggestions;
+    protected boolean imperative = false;
 
     abstractArgument(Supplier<List<String>> suggestions) {
         this.suggestions = suggestions;
     }
 
-    public abstract boolean isValidArgument(String s);
+    public boolean isValidArgument(String s) {
+        if (imperative)
+            return isValidArgumentAbstract(s) && suggestions.get().stream().anyMatch(s1 -> s1.equalsIgnoreCase(s));
+        else
+            return isValidArgumentAbstract(s);
+    }
+
+    protected abstract boolean isValidArgumentAbstract(String s);
 
     public List<String> getSuggestions() {
         return suggestions == null ? null : suggestions.get();
@@ -24,8 +32,26 @@ public abstract class abstractArgument<T> implements Argument {
         this.suggestions = suggestions;
     }
 
-    public abstract Argument overrideSuggestions(@NotNull Supplier<List<T>> suggestions);
+    public abstractArgument<T> overrideSuggestions(@NotNull Supplier<List<T>> suggestions) {
+        return overrideSuggestions(suggestions, false);
+    }
 
+    public abstract abstractArgument<T> overrideSuggestions(@NotNull Supplier<List<T>> suggestions, boolean imperative);
 
+    public abstractArgument<T> setAsImperative() {
+        imperative = true;
+        return this;
+    }
 
+    public boolean isImperative() {
+        return imperative;
+    }
+
+    @Override
+    public String toString() {
+        return "abstractArgument{" +
+                "suggestions=" + suggestions +
+                ", imperative=" + imperative +
+                '}';
+    }
 }
