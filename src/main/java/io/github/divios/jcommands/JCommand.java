@@ -26,12 +26,10 @@ public class JCommand {
     private final List<JCommand> subCommands = new ArrayList<>();
     private String usage;
     private final List<Predicate<CommandSender>> requirements = new ArrayList<>();
-    private BiConsumer<Player, List<Value>> playerExecutor = (player, args) -> {
-    };
-    private BiConsumer<ConsoleCommandSender, List<Value>> consoleExecutor = (sender, args) -> {
-    };
     private BiConsumer<CommandSender, List<Value>> defaultExecutor = (commandSender, args) -> {
     };
+    private BiConsumer<Player, List<Value>> playerExecutor = (player, args) -> defaultExecutor.accept(player, args);
+    private BiConsumer<ConsoleCommandSender, List<Value>> consoleExecutor = (sender, args) -> defaultExecutor.accept(sender, args);
 
 
     public static JCommand create(String name) {
@@ -130,7 +128,9 @@ public class JCommand {
         return name;
     }
 
-    boolean isSubCommand() { return isSubcommand; }
+    boolean isSubCommand() {
+        return isSubcommand;
+    }
 
     public List<String> getAliases() {
         return aliases;
