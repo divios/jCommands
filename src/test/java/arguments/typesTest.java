@@ -13,17 +13,17 @@ public class typesTest {
 
     @Test
     public void testValidArgument() {
-        Assert.assertTrue(new IntegerArgument().isValidArgument("3"));
+        Assert.assertTrue(new IntegerArgument("").isValidArgument("3"));
     }
 
     @Test
     public void testInvalidArgument() {
-        Assert.assertFalse(new IntegerArgument().isValidArgument("aaaa"));
+        Assert.assertFalse(new IntegerArgument("").isValidArgument("aaaa"));
     }
 
     @Test
     public void testCompetition() {
-        IntegerArgument argument = new IntegerArgument();
+        IntegerArgument argument = new IntegerArgument("");
         argument.overrideSuggestions(() -> Arrays.asList(3, 4, 5));
 
         List<String> expected = Arrays.asList("3", "4", "5");
