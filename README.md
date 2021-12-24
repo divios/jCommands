@@ -20,6 +20,74 @@ As you can see, it comes with various methods to assert the functions of the com
 some predefined arguments that will tabComplete automatically for you, in this case, 
 PlayerArgument returns all the online players in the server, although it can be override. 
 
+More examples of the api usage:
+
+<details>
+	<summary><b>Simple arguments</b></summary>
+    
+```java
+JCommand.create("simpleArguments")
+        .assertRequirements((commandSender) -> commandSender.isOp())   // The command will only be executed if certain conditions are met
+        .withArguments(new IntegerArgument("int"), new BooleanArgument("boolean"))  // The arguments are parsed in order
+        .executes((commandSender, args) -> {
+            int number = args.get("int").getAsInt();    // You can get the argument by name
+            boolean bool = args.get(1).getAsBoolean();  // Or by position
+         })
+        .register();
+```
+    
+</details>  
+
+<details>
+	<summary><b>Executors</b></summary>
+    
+```java
+JCommand.create("executorExample")
+        .executesPlayer((player, args) -> {    // Will only be executed if the command is called by a player
+             // Do something
+        })
+        .executesConsole((console, args) -> {  // Will only be executed if the command is called from console
+             // Do something
+         })
+        .executes((console, args) -> {         // Executes no matter who called the command
+             // Do something
+         })
+        .register();
+```
+    
+</details>  
+
+<details>
+	<summary><b>subCommands</b></summary>
+    
+```java
+JCommand.create("essentials")
+        .withSubcommands(JCommand.create("warp")
+                 .withArguments(new StringArgument("permission"))
+                 .withArguments(new StringArgument("groupName"))
+                 .executes((sender, args) -> {
+                     //perm group add code
+                 })
+                )
+         .withSubcommands(JCommand.create("setWarp")
+                  .withArguments(new StringArgument("permission"))
+                  .withArguments(new StringArgument("userName"))
+                  .executes((sender, args) -> {
+                      //perm user add code
+                  })
+                )
+          .withSubcommands(JCommand.create("spawn")
+                  .withArguments(new StringArgument("permission"))
+                  .withArguments(new StringArgument("userName"))
+                  .executes((sender, args) -> {
+                      //perm user remove code
+                  })
+           )
+          .register();
+```
+    
+</details> 
+
 
 # Instalation
 
