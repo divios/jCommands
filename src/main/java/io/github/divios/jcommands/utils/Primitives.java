@@ -2,6 +2,7 @@ package io.github.divios.jcommands.utils;
 
 import io.github.divios.jcommands.exceptions.primitiveFormatException;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 @SuppressWarnings("unused")
@@ -81,7 +82,7 @@ public class Primitives {
     }
 
     public static boolean isPlayer(String s) {
-        return Bukkit.getOnlinePlayers().stream().anyMatch(player -> player.getDisplayName().equalsIgnoreCase(s));
+        return Bukkit.getOnlinePlayers().stream().anyMatch(player -> ChatColor.stripColor(player.getDisplayName()).equalsIgnoreCase(s));
     }
 
     public static Player getAsPlayer(String s) {
