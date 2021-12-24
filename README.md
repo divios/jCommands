@@ -3,6 +3,15 @@ Light weight and simple library to parse spigot commands in the go.
 
 ## Usage
 
+First, to use the api, you need to register your plugin
+
+```java
+    @Override
+    public void onEnable() {
+    	JCommands.register(this);
+    }
+```
+
 jCommands provides a very simple command creation abstraction. Here is an example:
 
 ```java
