@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 
 public class IntegerArgument extends abstractArgument<Integer> {
 
-    public IntegerArgument() {
-        super(ArrayList::new);
+    public IntegerArgument(String name) {
+        super(name, ArrayList::new);
     }
 
     @Override

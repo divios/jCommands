@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 
 public class BooleanArgument extends abstractArgument<Boolean> {
 
-    public BooleanArgument() {
-        super(() -> Arrays.asList("true", "false"));
+    public BooleanArgument(String name) {
+        super(name, () -> Arrays.asList("true", "false"));
     }
 
     @Override

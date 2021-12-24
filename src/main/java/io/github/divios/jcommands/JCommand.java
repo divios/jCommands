@@ -2,7 +2,7 @@ package io.github.divios.jcommands;
 
 import io.github.divios.jcommands.arguments.Argument;
 import io.github.divios.jcommands.arguments.types.StringArgument;
-import io.github.divios.jcommands.utils.Value;
+import io.github.divios.jcommands.utils.ValueMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -26,10 +26,10 @@ public class JCommand {
     private final List<JCommand> subCommands = new ArrayList<>();
     private String usage;
     private final List<Predicate<CommandSender>> requirements = new ArrayList<>();
-    private BiConsumer<CommandSender, List<Value>> defaultExecutor = (commandSender, args) -> {
+    private BiConsumer<CommandSender, ValueMap> defaultExecutor = (commandSender, args) -> {
     };
-    private BiConsumer<Player, List<Value>> playerExecutor = (player, args) -> defaultExecutor.accept(player, args);
-    private BiConsumer<ConsoleCommandSender, List<Value>> consoleExecutor = (sender, args) -> defaultExecutor.accept(sender, args);
+    private BiConsumer<Player, ValueMap> playerExecutor = (player, args) -> defaultExecutor.accept(player, args);
+    private BiConsumer<ConsoleCommandSender, ValueMap> consoleExecutor = (sender, args) -> defaultExecutor.accept(sender, args);
 
 
     public static JCommand create(String name) {
@@ -105,17 +105,17 @@ public class JCommand {
         return assertRequirements(Arrays.asList(requirements));
     }
 
-    public JCommand executesConsole(BiConsumer<ConsoleCommandSender, List<Value>> consoleExecutor) {
+    public JCommand executesConsole(BiConsumer<ConsoleCommandSender, ValueMap> consoleExecutor) {
         this.consoleExecutor = consoleExecutor;
         return this;
     }
 
-    public JCommand executesPlayer(BiConsumer<Player, List<Value>> playerExecutor) {
+    public JCommand executesPlayer(BiConsumer<Player, ValueMap> playerExecutor) {
         this.playerExecutor = playerExecutor;
         return this;
     }
 
-    public JCommand executes(BiConsumer<CommandSender, List<Value>> defaultExecutor) {
+    public JCommand executes(BiConsumer<CommandSender, ValueMap> defaultExecutor) {
         this.defaultExecutor = defaultExecutor;
         return this;
     }
@@ -161,15 +161,15 @@ public class JCommand {
         return Collections.unmodifiableList(requirements);
     }
 
-    public BiConsumer<Player, List<Value>> getPlayerExecutor() {
+    public BiConsumer<Player, ValueMap> getPlayerExecutor() {
         return playerExecutor;
     }
 
-    public BiConsumer<ConsoleCommandSender, List<Value>> getConsoleExecutor() {
+    public BiConsumer<ConsoleCommandSender, ValueMap> getConsoleExecutor() {
         return consoleExecutor;
     }
 
-    public BiConsumer<CommandSender, List<Value>> getDefaultExecutor() {
+    public BiConsumer<CommandSender, ValueMap> getDefaultExecutor() {
         return defaultExecutor;
     }
 
@@ -181,7 +181,7 @@ public class JCommand {
      * @return the new subcommand with a new StringArgument.
      */
     private JCommand flatCommand(JCommand command) {
-        command.arguments.addFirst(new StringArgument()
+        command.arguments.addFirst(new StringArgument("commandName")
                 .setAsImperative()
                 .overrideSuggestions(() -> Collections.singletonList(command.name), true)
         );

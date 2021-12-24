@@ -3,14 +3,13 @@ package io.github.divios.jcommands;
 import io.github.divios.jcommands.arguments.Argument;
 import io.github.divios.jcommands.utils.CommandMapUtil;
 import io.github.divios.jcommands.utils.Value;
+import io.github.divios.jcommands.utils.ValueMap;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 class JCommandListener implements TabCompleter, CommandExecutor {
@@ -102,11 +101,11 @@ class JCommandListener implements TabCompleter, CommandExecutor {
 
         if (args.length == command.getArguments().size()) {   // If is the command we are good to go
             if (sender instanceof Player)
-                command.getPlayerExecutor().accept((Player) sender, castArgs(command, args));
+                command.getPlayerExecutor().accept((Player) sender, wrapArgs(command, args));
             else if (sender instanceof ConsoleCommandSender)
-                command.getConsoleExecutor().accept((ConsoleCommandSender) sender, castArgs(command, args));
+                command.getConsoleExecutor().accept((ConsoleCommandSender) sender, wrapArgs(command, args));
             else
-                command.getDefaultExecutor().accept(sender, castArgs(command, args));
+                command.getDefaultExecutor().accept(sender, wrapArgs(command, args));
             return true;
         } else {                                    // Check if the call can be passed to subCommand
             String[] newArgs = Arrays.copyOfRange(args, command.getArguments().size(), args.length);
@@ -123,10 +122,16 @@ class JCommandListener implements TabCompleter, CommandExecutor {
 
     }
 
-    private List<Value> castArgs(JCommand command, String[] args) {
-        return Arrays.stream(command.isSubCommand() ? Arrays.copyOfRange(args, 1, args.length) : args)
-                .map(Value::ofString)
-                .collect(Collectors.toList());
+    private ValueMap wrapArgs(JCommand command, String[] args) {
+
+        Map<String, Value> valueMap = new LinkedHashMap<>();
+        List<Argument> arguments = command.getArguments();
+
+        for (int i = 0; i < arguments.size(); i++) {
+            valueMap.put(arguments.get(i).getName(), Value.ofString(args[i]));
+        }
+
+        return ValueMap.of(valueMap);
     }
 
 }

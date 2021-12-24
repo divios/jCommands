@@ -8,8 +8,8 @@ import java.util.function.Supplier;
 
 public class StringArgument extends abstractArgument<String> {
 
-    public StringArgument() {
-        super(ArrayList::new);
+    public StringArgument(String name) {
+        super(name, ArrayList::new);
     }
 
     @Override

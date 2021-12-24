@@ -8,12 +8,17 @@ import java.util.function.Supplier;
 
 public abstract class abstractArgument<T> implements Argument {
 
+    protected final String name;
     protected Supplier<List<String>> suggestions;
     protected boolean imperative = false;
 
-    abstractArgument(Supplier<List<String>> suggestions) {
+    abstractArgument(String name, Supplier<List<String>> suggestions) {
+        this.name = name;
         this.suggestions = suggestions;
     }
+
+    @Override
+    public String getName() { return name; }
 
     public boolean isValidArgument(String s) {
         if (imperative)
