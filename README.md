@@ -23,7 +23,7 @@ PlayerArgument returns all the online players in the server, although it can be 
 
 # Instalation
 
-To get the jar, either download it from the releases tab either here on [GitHub](https://github.com/divios/jCommands/releases) or [build it locally](https://github.com/divios/jParser#build-locally).
+To get the jar, either download it from the releases tab either here on [GitHub](https://github.com/divios/jCommands/releases) or [build it locally](https://github.com/divios/jCommands#build-locally).
 
 ## With Jitpack:
 
