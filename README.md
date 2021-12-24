@@ -127,7 +127,7 @@ Maven:
         <scope>provided</scope>
 </dependency>
 ```
-Replace `Tag` with a release tag for jParser. Example: `1.0`. You can also use `master` as the tag to get the latest version, though you will have to clear your maven caches in order to update it.
+Replace `Tag` with a release tag for jParser. Example: `1.5`. You can also use `master` as the tag to get the latest version, though you will have to clear your maven caches in order to update it.
 
 ## Build locally:
 
