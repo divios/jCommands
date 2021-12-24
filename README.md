@@ -3,7 +3,7 @@ Light weight and simple library to parse spigot commands in the go.
 
 ## Usage
 
-jCommands provides a very simple command creation abstraction. Here is and example:
+jCommands provides a very simple command creation abstraction. Here is an example:
 
 ```java
     JCommand.create("example")
@@ -17,7 +17,7 @@ jCommands provides a very simple command creation abstraction. Here is and examp
 ```
 
 As you can see, it comes with various methods to assert the functions of the command and 
-some predefined arguments, that will tabComplete automatically for you, in this case, 
+some predefined arguments that will tabComplete automatically for you, in this case, 
 PlayerArgument returns all the online players in the server, although it can be override. 
 
 
