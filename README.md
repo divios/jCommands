@@ -1,5 +1,5 @@
 # jCommands [![](https://jitpack.io/v/divios/JCommands.svg)](https://jitpack.io/#divios/JCommands)
-Light weight and simple library to parse spigot commands in the go.
+Light weight and simple library to create spigot commands in the go.
 
 ## Usage
 
