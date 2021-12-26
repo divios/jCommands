@@ -3,7 +3,6 @@ package io.github.divios.jcommands.utils;
 import com.google.common.base.Preconditions;
 import io.github.divios.jcommands.exceptions.primitiveFormatException;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 @SuppressWarnings("unused")
