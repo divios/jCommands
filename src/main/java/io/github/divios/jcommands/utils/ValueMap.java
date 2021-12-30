@@ -1,7 +1,6 @@
 package io.github.divios.jcommands.utils;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ValueMap {
     
@@ -41,12 +40,20 @@ public class ValueMap {
             }
             i++;
         }
-        
+
         return value == null ? Value.EMPTY() : value;
     }
 
     public Value get(String key) {
         return valueMap.getOrDefault(key, Value.EMPTY());
+    }
+
+    public Set<String> keys() {
+        return Collections.unmodifiableSet(valueMap.keySet());
+    }
+
+    public Collection<Value> values() {
+        return Collections.unmodifiableCollection(valueMap.values());
     }
     
 }

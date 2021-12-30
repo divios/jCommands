@@ -51,6 +51,8 @@ class JCommandListener implements TabCompleter, CommandExecutor {
 
                 boolean isValid = true;
                 for (int i = arguments.size(); i < args.length - 1; i++) {          // Check if previous arguments of subcommand are valid
+                    if (i >= subCommand.getArguments().size()) break;               // Break if input have more arguments than necessary
+
                     Argument argument;
                     if (!((argument = subCommand.getArguments().get(i - arguments.size())) != null
                             && argument.isValidArgument(args[i]))) {
