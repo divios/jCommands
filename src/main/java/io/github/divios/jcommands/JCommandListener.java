@@ -72,6 +72,7 @@ class JCommandListener implements TabCompleter, CommandExecutor {
     private List<String> getFilteredTabComplete(List<String> tabCompletes, String filter) {
         return tabCompletes == null ? null : tabCompletes.stream()
                 .filter(s -> s.startsWith(filter))
+                .distinct()
                 .collect(Collectors.toList());
     }
 
