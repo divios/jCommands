@@ -83,7 +83,9 @@ class JCommandListener implements TabCompleter, CommandExecutor {
 
     private boolean callCommand(CommandSender sender, JCommand command, String[] args) {
 
-        if (!sender.hasPermission(command.getPermission())) {    // Permissions check
+        if (command.getPermission() != null
+                && !command.getPermission().getName().isEmpty()
+                && !sender.hasPermission(command.getPermission())) {    // Permissions check
             command.getInvalidPermissionAction().accept(sender);
             return false;
         }

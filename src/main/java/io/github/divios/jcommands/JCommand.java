@@ -19,7 +19,7 @@ public class JCommand {
     private final String name;
     private boolean isSubcommand = false;
     private final List<String> aliases = new ArrayList<>();
-    private Permission permission = new Permission("");
+    private Permission permission = null;
     private Consumer<CommandSender> invalidPermission = player -> {
     };
     private final LinkedList<Argument> arguments = new LinkedList<>();
@@ -60,11 +60,11 @@ public class JCommand {
         });
     }
 
-    private JCommand assertPermission(String permissionStr, Consumer<CommandSender> invalidPermission) {
+    public JCommand assertPermission(String permissionStr, Consumer<CommandSender> invalidPermission) {
         return assertPermission(new Permission(permissionStr), invalidPermission);
     }
 
-    private JCommand assertPermission(Permission permission, Consumer<CommandSender> invalidPermission) {
+    public JCommand assertPermission(Permission permission, Consumer<CommandSender> invalidPermission) {
         this.permission = permission;
         this.invalidPermission = invalidPermission;
         return this;
