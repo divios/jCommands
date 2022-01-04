@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'io.github.divios'
-version = '1.5'
+version = '1.6'
 
 sourceCompatibility = 1.8 // java 8
 targetCompatibility = 1.8
@@ -49,7 +49,6 @@ publishing {
         mavenJava(MavenPublication) {
             groupId = 'com.github.divios'
             artifactId = 'jCommands'
-            version = '1.0'
 
             from components.java
         }

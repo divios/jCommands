@@ -3,6 +3,7 @@ package io.github.divios.jcommands.utils;
 import com.google.common.base.Preconditions;
 import io.github.divios.jcommands.exceptions.primitiveFormatException;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 @SuppressWarnings("unused")
@@ -82,12 +83,15 @@ public class Primitives {
     }
 
     public static boolean isPlayer(String s) {
-        return Bukkit.getPlayer(s) != null;
+        return Bukkit.getOnlinePlayers().stream()
+                .anyMatch(player -> ChatColor.stripColor(player.getDisplayName()).equalsIgnoreCase(s));
     }
 
     public static Player getAsPlayer(String s) {
         Preconditions.checkArgument(isPlayer(s), "Invalid Player");
-        return Bukkit.getPlayer(s);
+        return Bukkit.getOnlinePlayers().stream()
+                .filter(player -> ChatColor.stripColor(player.getDisplayName()).equalsIgnoreCase(s))
+                .findFirst().orElse(null);
     }
 
     private static boolean testCast(Runnable runnable) {
