@@ -47,7 +47,7 @@ processResources {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId = 'com.github.divios'
+            groupId = group
             artifactId = 'jCommands'
 
             from components.java
