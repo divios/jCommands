@@ -1,5 +1,7 @@
 package io.github.divios.jcommands.maptree;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import io.github.divios.jcommands.JCommand;
 import io.github.divios.jcommands.arguments.Argument;
 import io.github.divios.jcommands.arguments.types.StringArgument;
@@ -7,10 +9,12 @@ import io.github.divios.jcommands.arguments.types.StringArgument;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unused")
 public class TreeMap {
 
+    private final TreeCache cache = TreeCache.create();
     private final HashMap<String, Node> rootNodes;
 
     public TreeMap() {
@@ -21,6 +25,10 @@ public class TreeMap {
         Node root;
         if ((root = rootNodes.get(commandLabel)) == null
                 || root.isLeaf()) return null;
+
+        Node cached;
+        if ((cached = cache.get(commandLabel, args)) != null)
+            return cached;
 
         Node search = root;
         int pos = 0;
@@ -38,6 +46,9 @@ public class TreeMap {
             pos++;
         }
 
+        if (search != null)
+            cache.put(commandLabel, args, search);
+
         return search;
     }
 
@@ -45,9 +56,6 @@ public class TreeMap {
         Node root = new Node(new StringArgument(""), command);
         processChildren(root, command);
         rootNodes.put(command.getName().toLowerCase(), root);
-        for (String alias : command.getAliases())      // Register aliases
-            rootNodes.put(alias.toLowerCase(), root);
-
     }
 
     public void remove(String commandName) {
@@ -100,6 +108,38 @@ public class TreeMap {
         return clone;
     }
 
+    private static final class TreeCache {
+
+        private final Cache<String, Node> cache;
+
+        public static TreeCache create() {
+            return new TreeCache();
+        }
+
+        private TreeCache() {
+            cache = CacheBuilder.newBuilder()
+                    .expireAfterAccess(15, TimeUnit.SECONDS)     // 15 seconds to expire
+                    .build();
+        }
+
+        public Node get(String root, String[] args) {
+            return cache.getIfPresent(appendArray(root, args));
+        }
+
+        public void put(String root, String[] args, Node node) {
+            cache.put(appendArray(root, args), node);
+        }
+
+        private String appendArray(String root, String[] args) {
+            StringBuilder stringBuilder = new StringBuilder(root);
+            for (String arg : args)
+                stringBuilder.append(arg);
+
+            return stringBuilder.toString();
+        }
+
+
+    }
 
 
 }
