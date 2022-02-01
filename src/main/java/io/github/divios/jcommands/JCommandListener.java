@@ -18,6 +18,10 @@ class JCommandListener implements TabCompleter, CommandExecutor {
     JCommandListener() {
     }
 
+    public void registerCommand(JCommand command) {
+        commandMap.put(command);
+    }
+
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         System.out.println("Listener working");

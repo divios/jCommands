@@ -19,6 +19,7 @@ public final class JCommands {
     static void registerCommand(JCommand command) {
         Preconditions.checkNotNull(providerPlugin, "No provider plugin was registered on load");
         CommandMapUtil.registerCommand(providerPlugin, listener, command.getAliases());
+        listener.registerCommand(command);
     }
 
 }
