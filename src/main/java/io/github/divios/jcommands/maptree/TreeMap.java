@@ -44,7 +44,10 @@ public class TreeMap {
     public void put(JCommand command) {
         Node root = new Node(new StringArgument(""), command);
         processChildren(root, command);
-        rootNodes.put(command.getName(), root);
+        rootNodes.put(command.getName().toLowerCase(), root);
+        for (String alias : command.getAliases())      // Register aliases
+            rootNodes.put(alias.toLowerCase(), root);
+
     }
 
     public void remove(String commandName) {

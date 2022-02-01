@@ -21,7 +21,7 @@ class JCommandListener implements TabCompleter, CommandExecutor {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         System.out.println("Listener working");
-        System.out.println("label: " + command.getLabel());
+        System.out.println("label: " + command.getAliases());
         System.out.println("Name; " + command.getName());
         System.out.println("args: " + args);
 
