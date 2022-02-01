@@ -114,13 +114,15 @@ public class mapTests {
         String label = "test";
         String[] args = new String[]{"sub1", ""};
 
-        List<String> suggestions = treeMap.search(label, Arrays.copyOfRange(args, 0, args.length - 1))
-                .getChildren().stream()
-                .map(node -> node.getLabel().getSuggestions())
-                .reduce(new ArrayList<>(), (strings, strings2) -> {
-                    strings.addAll(strings2);
-                    return strings;
-                });
+        List<String> suggestions = new ArrayList<>();
+
+        for (Node child : treeMap.search(label, Arrays.copyOfRange(args, 0, args.length - 1)).getChildren()) {
+            //if (!meetsCommandRequirements(sender, child.getCommand())) continue;
+
+            for (String suggestion : child.getLabel().getSuggestions())
+                if (suggestion.startsWith(args[args.length - 1]))
+                    suggestions.add(suggestion);
+        }
 
         Assert.assertEquals(Arrays.asList("ok", "ok3"), suggestions);
     }
