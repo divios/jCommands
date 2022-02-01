@@ -181,10 +181,11 @@ public class JCommand {
      * @return the new subcommand with a new StringArgument.
      */
     private JCommand flatCommand(JCommand command) {
-        command.arguments.addFirst(new StringArgument("commandName")
+        command.requirements.addAll(this.requirements);         // Adds the requirements of the father
+        /*command.arguments.addFirst(new StringArgument("commandName")
                 .setAsImperative()
                 .overrideSuggestions(() -> Collections.singletonList(command.name), true)
-        );
+        ); */
         return command;
     }
 

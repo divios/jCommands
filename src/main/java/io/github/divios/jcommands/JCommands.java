@@ -1,20 +1,24 @@
 package io.github.divios.jcommands;
 
 import com.google.common.base.Preconditions;
+import io.github.divios.jcommands.utils.CommandMapUtil;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
 public final class JCommands {
 
     private static JavaPlugin providerPlugin;
+    private static JCommandListener listener = null;
 
-    public static void register(JavaPlugin providerPlugin) {
+    public static void register(@NotNull JavaPlugin providerPlugin) {
         JCommands.providerPlugin = providerPlugin;
+        listener = new JCommandListener();
     }
 
     static void registerCommand(JCommand command) {
         Preconditions.checkNotNull(providerPlugin, "No provider plugin was registered on load");
-        new JCommandListener(providerPlugin, command);
+        CommandMapUtil.registerCommand(providerPlugin, listener, command.getAliases());
     }
 
 }
