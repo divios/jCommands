@@ -25,7 +25,7 @@ class JCommandListener implements TabCompleter, CommandExecutor {
         System.out.println("Name; " + command.getName());
         System.out.println("args: " + args);
 
-        Node node = commandMap.search(command.getLabel(), Arrays.copyOfRange(args, 0, args.length - 1));  // do not include the
+        Node node = commandMap.search(command.getName(), Arrays.copyOfRange(args, 0, args.length - 1));  // do not include the
         if (node == null) return null;
 
         System.out.println("node found of name: " + node.getLabel().getName());
