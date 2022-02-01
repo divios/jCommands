@@ -20,6 +20,7 @@ class JCommandListener implements TabCompleter, CommandExecutor {
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
+        System.out.println("Listener working");
         Node node = commandMap.search(command.getLabel(), Arrays.copyOfRange(args, 0, args.length - 1));  // do not include the
         if (node == null) return null;
 
@@ -37,7 +38,7 @@ class JCommandListener implements TabCompleter, CommandExecutor {
 
     private boolean meetsCommandRequirements(CommandSender sender, JCommand command) {
         return meetsPerms(sender, command) &&
-                !command.getRequirements().stream()
+                command.getRequirements().stream()
                         .allMatch(commandSenderPredicate -> commandSenderPredicate.test(sender));
     }
 
