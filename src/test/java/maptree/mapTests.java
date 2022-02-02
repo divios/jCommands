@@ -197,6 +197,30 @@ public class mapTests {
         Assert.assertEquals(treeMap.height(), 3);
     }
 
+    @Test
+    public void testAliases() {
+        TreeMap treeMap = new TreeMap();
+        JCommand test = new JCommand("test")
+                .withAliases("txt", "ts", "tst")
+                .withSubcommands(
+                        JCommand.create("restock")
+                                .withArguments(new StringArgument("shop")
+                                        .overrideSuggestions(() -> Arrays.asList("blocks", "drops", "--all", "farm"))
+                                )
+                                .executes((sender, valueMap) -> System.out.println(valueMap.get("shop").getAsString()))
+                ).withSubcommands(
+                        JCommand.create("sub2")
+                );
+        treeMap.put(test);
+
+        String[] labels = new String[]{"test", "txt", "ts", "tst"};
+        String[] args = new String[]{"restock", "drops"};
+
+        for (String label : labels)
+            Assert.assertNotNull(treeMap.search(label, args));
+
+    }
+
     private ValueMap wrapArgs(JCommand command, String[] args) {
 
         Map<String, Value> valueMap = new LinkedHashMap<>();
@@ -210,5 +234,6 @@ public class mapTests {
 
         return ValueMap.of(valueMap);
     }
+
 
 }

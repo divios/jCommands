@@ -6,6 +6,7 @@ import io.github.divios.jcommands.maptree.TreeMap;
 import io.github.divios.jcommands.utils.Value;
 import io.github.divios.jcommands.utils.ValueMap;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +26,8 @@ class JCommandListener implements TabCompleter, CommandExecutor {
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
-        Node node = commandMap.search(command.getName(), Arrays.copyOfRange(args, 0, args.length - 1));  // do not include the
+        System.out.println(command.getName());
+        Node node = commandMap.search(command.getName().toLowerCase(), Arrays.copyOfRange(args, 0, args.length - 1));  // do not include the last to get parent
         if (node == null) return null;
 
         List<String> tabCompletes = new ArrayList<>();
@@ -33,11 +35,11 @@ class JCommandListener implements TabCompleter, CommandExecutor {
             if (!meetsCommandRequirements(sender, child.getCommand())) continue;
 
             for (String suggestion : child.getLabel().getSuggestions())
-                if (suggestion.startsWith(args[args.length - 1]))
+                if (StringUtils.startsWithIgnoreCase(suggestion, (args[args.length - 1])))
                     tabCompletes.add(suggestion);
         }
 
-        return tabCompletes.isEmpty() ? null : tabCompletes;
+        return tabCompletes;
     }
 
     private boolean meetsCommandRequirements(CommandSender sender, JCommand command) {
