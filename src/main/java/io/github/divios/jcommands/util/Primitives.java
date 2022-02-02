@@ -1,4 +1,4 @@
-package io.github.divios.jcommands.utils;
+package io.github.divios.jcommands.util;
 
 import com.google.common.base.Preconditions;
 import io.github.divios.jcommands.exceptions.primitiveFormatException;

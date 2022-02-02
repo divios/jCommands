@@ -5,12 +5,11 @@ import com.google.common.cache.CacheBuilder;
 import io.github.divios.jcommands.JCommand;
 import io.github.divios.jcommands.arguments.Argument;
 import io.github.divios.jcommands.arguments.types.StringArgument;
+import io.github.divios.jcommands.maptree.util.CollectionUtil;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class TreeMap {
@@ -51,10 +50,11 @@ public class TreeMap {
     }
 
     public void put(JCommand command) {
-        Node root = new Node(new StringArgument(""), command);
+        Node root = new Node(new StringArgument(command.getName()), command);
         root.addPermission(command.getPermission());        // Add first permission
 
         processChildren(root, command);
+        reduceNode(root);
         rootNodes.put(command.getName().toLowerCase(), root);
 
         for (String alias : command.getAliases())      // Register aliases
@@ -77,11 +77,34 @@ public class TreeMap {
         return height;
     }
 
+    public String toString() {
+        StringBuilder buffer = new StringBuilder(50);
+        for (Node value : rootNodes.values())
+            print(value, buffer, "", "");
+        return buffer.toString();
+    }
+
+    private void print(Node node, StringBuilder buffer, String prefix, String childrenPrefix) {
+        buffer.append(prefix);
+        buffer.append(node.getLabel().getName());
+        buffer.append('\n');
+        for (Iterator<Node> it = node.getChildren().iterator(); it.hasNext();) {
+            Node next = it.next();
+            if (it.hasNext()) {
+                print(next, buffer, childrenPrefix + "├── ", childrenPrefix + "│   ");
+            } else {
+                print(next, buffer, childrenPrefix + "└── ", childrenPrefix + "    ");
+            }
+        }
+    }
+
+
+    // UTILS //
+
     private void processChildren(Node node, JCommand command) {
         if (!command.getArguments().isEmpty())      // Process arguments if any
             node = processArguments(node, command.getArguments());
 
-        // TODO: process subCommand with same label and reduce them
         for (JCommand subCommand : command.getSubCommands()) {
             Node child = new Node(new StringArgument(subCommand.getName())
                     .overrideSuggestions(() -> Collections.singletonList(subCommand.getName()), true),
@@ -89,6 +112,47 @@ public class TreeMap {
             node.addChildren(child);
             processChildren(child, subCommand);
         }
+    }
+
+    private void reduceNode(Node node) {
+        List<Node> finalChildren = new ArrayList<>();
+        Map<String, List<Node>> similarNodes = new HashMap<>();
+
+        for (Node child : node.getChildren())       // Populate similarNodes
+            similarNodes.compute(child.getLabel().getName(), (s, strings) ->
+                    CollectionUtil.concat((strings == null) ? new ArrayList<>() : strings, child)
+            );
+
+        /*similarNodes.values().forEach(nodes -> {
+            System.out.println(Arrays.toString(nodes.stream()
+                    .map(node1 -> node1.getLabel().getName())
+                    .toArray()));
+        }); */
+
+        for (List<Node> value : similarNodes.values()) {
+            if (value.size() == 1) {        // If no similar children then just add and continue
+                finalChildren.add(value.get(0));
+                continue;
+            }
+
+            Node root = minHeightNode(value);
+            for (Node node1 : CollectionUtil.remove(value, root)) {
+                root.addChildren(node1.getChildren());
+            }
+            reduceNode(root);
+            finalChildren.add(root);
+        }
+
+        node.setChildren(finalChildren);
+    }
+
+    private Node minHeightNode(List<Node> nodes) {
+        Node minNode = nodes.get(0);
+        for (int i = 1; i < nodes.size(); i++)
+            if (nodes.get(i).getSize() < minNode.getSize())
+                minNode = nodes.get(i);
+
+        return minNode;
     }
 
     private Node processArguments(Node to, List<Argument> arguments) {

@@ -1,8 +1,7 @@
 package io.github.divios.jcommands;
 
 import io.github.divios.jcommands.arguments.Argument;
-import io.github.divios.jcommands.arguments.types.StringArgument;
-import io.github.divios.jcommands.utils.ValueMap;
+import io.github.divios.jcommands.util.ValueMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;

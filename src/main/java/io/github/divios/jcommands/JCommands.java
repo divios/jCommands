@@ -1,7 +1,7 @@
 package io.github.divios.jcommands;
 
 import com.google.common.base.Preconditions;
-import io.github.divios.jcommands.utils.CommandMapUtil;
+import io.github.divios.jcommands.util.CommandMapUtil;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 

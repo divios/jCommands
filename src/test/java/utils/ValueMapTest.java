@@ -1,7 +1,7 @@
 package utils;
 
-import io.github.divios.jcommands.utils.Value;
-import io.github.divios.jcommands.utils.ValueMap;
+import io.github.divios.jcommands.util.Value;
+import io.github.divios.jcommands.util.ValueMap;
 import org.junit.Assert;
 import org.junit.Test;
 

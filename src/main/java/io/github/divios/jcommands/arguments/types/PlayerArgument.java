@@ -1,6 +1,6 @@
 package io.github.divios.jcommands.arguments.types;
 
-import io.github.divios.jcommands.utils.Primitives;
+import io.github.divios.jcommands.util.Primitives;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

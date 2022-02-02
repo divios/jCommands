@@ -1,6 +1,6 @@
 package io.github.divios.jcommands.arguments.types;
 
-import io.github.divios.jcommands.utils.Primitives;
+import io.github.divios.jcommands.util.Primitives;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

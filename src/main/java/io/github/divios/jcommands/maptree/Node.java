@@ -37,6 +37,10 @@ public class Node {
         children.add(child);
     }
 
+    public void addChildren(Collection<Node> children) {
+        this.children.addAll(children);
+    }
+
     public void addPermission(Permission permission) {
         permissions.add(permission);
     }

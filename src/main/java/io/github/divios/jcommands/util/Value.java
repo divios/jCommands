@@ -1,4 +1,4 @@
-package io.github.divios.jcommands.utils;
+package io.github.divios.jcommands.util;
 
 import org.bukkit.entity.Player;
 

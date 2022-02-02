@@ -6,13 +6,14 @@ import io.github.divios.jcommands.arguments.types.IntegerArgument;
 import io.github.divios.jcommands.arguments.types.StringArgument;
 import io.github.divios.jcommands.maptree.Node;
 import io.github.divios.jcommands.maptree.TreeMap;
-import io.github.divios.jcommands.utils.Value;
-import io.github.divios.jcommands.utils.ValueMap;
+import io.github.divios.jcommands.util.Value;
+import io.github.divios.jcommands.util.ValueMap;
 import org.apache.commons.lang.ArrayUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class mapTests {
 
@@ -89,6 +90,8 @@ public class mapTests {
         String label = "test";
         String[] args = new String[]{""};
 
+        System.out.println(treeMap);
+
         List<String> suggestions = treeMap.search(label, Arrays.copyOfRange(args, 0, args.length - 1)).getChildren().stream()
                 .map(node -> node.getLabel().getSuggestions())
                 .reduce(new ArrayList<>(), (strings, strings2) -> {
@@ -96,7 +99,7 @@ public class mapTests {
                     return strings;
                 });
 
-        Assert.assertEquals(Arrays.asList("sub1", "sub2"), suggestions);
+        Assert.assertEquals(Arrays.asList("sub2", "sub1"), suggestions);
     }
 
     @Test
@@ -130,12 +133,44 @@ public class mapTests {
     }
 
     @Test
+    public void testSimilarSubcommands() {
+        TreeMap treeMap = new TreeMap();
+        AtomicInteger testValue = new AtomicInteger();
+        JCommand test = new JCommand("test")
+                .withSubcommands(
+                        JCommand.create("open")
+                                .executes((sender, valueMap) -> testValue.set(1))
+                )
+                .withSubcommands(
+                        JCommand.create("open")
+                                .withArguments(new StringArgument("shop"))
+                                .executes((sender, valueMap) -> testValue.set(2))
+                )
+                .withSubcommands(
+                        JCommand.create("open")
+                                .withArguments(new StringArgument("shop"), new StringArgument("player"))
+                                .executes((sender, valueMap) -> testValue.set(3))
+                );
+        treeMap.put(test);
+
+        treeMap.search("test", new String[]{"open"}).getCommand().getDefaultExecutor().accept(null, null);
+        Assert.assertEquals(1, testValue.get());
+
+        treeMap.search("test", new String[]{"open", "shop"}).getCommand().getDefaultExecutor().accept(null, null);
+        Assert.assertEquals(2, testValue.get());
+
+        treeMap.search("test", new String[]{"open", "shop", "divios"}).getCommand().getDefaultExecutor().accept(null, null);
+        Assert.assertEquals(3, testValue.get());
+
+    }
+
+    @Test
     public void testAction() {
         TreeMap treeMap = new TreeMap();
         JCommand test = new JCommand("test")
                 .withSubcommands(
                         JCommand.create("sub1")
-                                .withArguments(new StringArgument("")
+                                .withArguments(new StringArgument("okes")
                                         .overrideSuggestions(() -> Arrays.asList("ok", "ok3"))
                                 )
                                 .executes((sender, valueMap) -> System.out.println("oke"))
@@ -146,6 +181,8 @@ public class mapTests {
 
         String label = "test";
         String[] args = new String[]{"sub1", "ok"};
+
+        System.out.println(treeMap);
 
         Node node = treeMap.search(label, args);
         Assert.assertNotNull(node);
