@@ -179,6 +179,24 @@ public class mapTests {
 
     }
 
+    @Test
+    public void testSize() {
+        TreeMap treeMap = new TreeMap();
+        JCommand test = new JCommand("test")
+                .withSubcommands(
+                        JCommand.create("restock")
+                                .withArguments(new StringArgument("shop")
+                                        .overrideSuggestions(() -> Arrays.asList("blocks", "drops", "--all", "farm"))
+                                )
+                                .executes((sender, valueMap) -> System.out.println(valueMap.get("shop").getAsString()))
+                ).withSubcommands(
+                        JCommand.create("sub2")
+                );
+        treeMap.put(test);
+
+        Assert.assertEquals(treeMap.height(), 3);
+    }
+
     private ValueMap wrapArgs(JCommand command, String[] args) {
 
         Map<String, Value> valueMap = new LinkedHashMap<>();

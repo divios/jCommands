@@ -6,6 +6,7 @@ import io.github.divios.jcommands.JCommand;
 import io.github.divios.jcommands.arguments.Argument;
 import io.github.divios.jcommands.arguments.types.StringArgument;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -29,30 +30,30 @@ public class TreeMap {
         if ((cached = cache.get(commandLabel, args)) != null)
             return cached;
 
-        Node search = root;
-        int pos = 0;
-        List<Node> children;
-
-        while ((pos < args.length) && (search != null) && !(children = search.getChildren()).isEmpty()) {
-            Node childMatch = null;
-            for (Node child : children) {
-                if (child.getLabel().isValidArgument(args[pos])) {
-                    childMatch = child;
-                    break;
-                }
-            }
-            search = childMatch;
-            pos++;
-        }
-
-        if (search != null)
+        Node search;
+        if ((search = innerSearch(root, args)) != null)
             cache.put(commandLabel, args, search);
+
+        return search;
+    }
+
+    private Node innerSearch(Node node, String[] args) {
+        if (node == null) return null;
+        if (args.length == 0) return node;      // Finish search
+
+        Node search = null;
+        for (Node child : node.getChildren())
+            if (child.getLabel().isValidArgument(args[0]))
+                if ((search = innerSearch(child, Arrays.copyOfRange(args, 1, args.length))) != null)
+                    break;
 
         return search;
     }
 
     public void put(JCommand command) {
         Node root = new Node(new StringArgument(""), command);
+        root.addPermission(command.getPermission());        // Add first permission
+
         processChildren(root, command);
         rootNodes.put(command.getName().toLowerCase(), root);
 
@@ -66,6 +67,14 @@ public class TreeMap {
 
     public void clear() {
         rootNodes.clear();
+    }
+
+    public int height() {
+        int height = 0;
+        for (Node value : rootNodes.values())
+            height = Math.max(height, value.getSize());
+
+        return height;
     }
 
     private void processChildren(Node node, JCommand command) {
@@ -86,6 +95,7 @@ public class TreeMap {
         Node current = to;
         for (Argument argument : arguments) {
             Node child = new Node(argument, cloneWithOutAction(current.getCommand()));  // Remove actions
+            child.addPermission(current.getPermissions());
             current.addChildren(child);
             current = child;
         }
