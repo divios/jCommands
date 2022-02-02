@@ -5,6 +5,7 @@ import io.github.divios.jcommands.maptree.Node;
 import io.github.divios.jcommands.maptree.TreeMap;
 import io.github.divios.jcommands.utils.Value;
 import io.github.divios.jcommands.utils.ValueMap;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -54,6 +55,7 @@ class JCommandListener implements TabCompleter, CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         Node node = commandMap.search(command.getLabel(), args);
         if (node == null) return false;
+
         if (!meetsCommandRequirements(sender, node.getCommand())) {
             node.getCommand().getInvalidPermissionAction().accept(sender);
             return false;
@@ -72,12 +74,13 @@ class JCommandListener implements TabCompleter, CommandExecutor {
     }
 
     private ValueMap wrapArgs(JCommand command, String[] args) {
-
         Map<String, Value> valueMap = new LinkedHashMap<>();
         List<Argument> arguments = command.getArguments();
 
+        String[] validArgs = Arrays.copyOfRange(args, ArrayUtils.indexOf(args, command.getName()) + 1, args.length);
+
         for (int i = 0; i < arguments.size(); i++) {
-            valueMap.put(arguments.get(i).getName(), Value.ofString(args[i]));
+            valueMap.put(arguments.get(i).getName(), Value.ofString(validArgs[i]));
         }
 
         return ValueMap.of(valueMap);

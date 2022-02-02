@@ -94,6 +94,7 @@ public class TreeMap {
     }
 
     private void cloneActions(JCommand to, JCommand from) {
+        if (to == from) return;
         to.executes(from.getDefaultExecutor());
         to.executesPlayer(from.getPlayerExecutor());
         to.executesConsole(from.getConsoleExecutor());

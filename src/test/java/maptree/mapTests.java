@@ -1,16 +1,18 @@
 package maptree;
 
 import io.github.divios.jcommands.JCommand;
+import io.github.divios.jcommands.arguments.Argument;
 import io.github.divios.jcommands.arguments.types.IntegerArgument;
 import io.github.divios.jcommands.arguments.types.StringArgument;
 import io.github.divios.jcommands.maptree.Node;
 import io.github.divios.jcommands.maptree.TreeMap;
+import io.github.divios.jcommands.utils.Value;
+import io.github.divios.jcommands.utils.ValueMap;
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class mapTests {
 
@@ -150,6 +152,45 @@ public class mapTests {
 
         node.getCommand().getDefaultExecutor().accept(null, null);
 
+    }
+
+    @Test
+    public void testAction2() {
+        TreeMap treeMap = new TreeMap();
+        JCommand test = new JCommand("test")
+                .withSubcommands(
+                        JCommand.create("restock")
+                                .withArguments(new StringArgument("shop")
+                                        .overrideSuggestions(() -> Arrays.asList("blocks", "drops", "--all", "farm"))
+                                )
+                                .executes((sender, valueMap) -> System.out.println(valueMap.get("shop").getAsString()))
+                ).withSubcommands(
+                        JCommand.create("sub2")
+                );
+        treeMap.put(test);
+
+        String label = "test";
+        String[] args = new String[]{"restock", "drops"};
+
+        Node node = treeMap.search(label, args);
+        Assert.assertNotNull(node);
+
+        node.getCommand().getDefaultExecutor().accept(null, wrapArgs(node.getCommand(), args));
+
+    }
+
+    private ValueMap wrapArgs(JCommand command, String[] args) {
+
+        Map<String, Value> valueMap = new LinkedHashMap<>();
+        List<Argument> arguments = command.getArguments();
+
+        String[] validArgs = Arrays.copyOfRange(args, ArrayUtils.indexOf(args, command.getName()) + 1, args.length);
+
+        for (int i = 0; i < arguments.size(); i++) {
+            valueMap.put(arguments.get(i).getName(), Value.ofString(validArgs[i]));
+        }
+
+        return ValueMap.of(valueMap);
     }
 
 }
