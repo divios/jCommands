@@ -26,8 +26,7 @@ class JCommandListener implements TabCompleter, CommandExecutor {
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
-        System.out.println(command.getName());
-        Node node = commandMap.search(command.getName().toLowerCase(), Arrays.copyOfRange(args, 0, args.length - 1));  // do not include the last to get parent
+        Node node = commandMap.search(command.getName(), Arrays.copyOfRange(args, 0, args.length - 1));  // do not include the last to get parent
         if (node == null) return null;
 
         List<String> tabCompletes = new ArrayList<>();
@@ -55,8 +54,7 @@ class JCommandListener implements TabCompleter, CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        System.out.println("Label: " + command.getLabel());
-        Node node = commandMap.search(command.getLabel(), args);
+        Node node = commandMap.search(command.getName(), args);
         if (node == null) return false;
 
         if (!meetsCommandRequirements(sender, node.getCommand())) {
