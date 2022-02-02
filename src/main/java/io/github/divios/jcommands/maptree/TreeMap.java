@@ -23,8 +23,7 @@ public class TreeMap {
 
     public Node search(String commandLabel, String[] args) {
         Node root;
-        if ((root = rootNodes.get(commandLabel)) == null
-                || root.isLeaf()) return null;
+        if ((root = rootNodes.get(commandLabel)) == null) return null;
 
         Node cached;
         if ((cached = cache.get(commandLabel, args)) != null)
@@ -121,7 +120,7 @@ public class TreeMap {
 
         private TreeCache() {
             cache = CacheBuilder.newBuilder()
-                    .expireAfterAccess(15, TimeUnit.SECONDS)     // 15 seconds to expire
+                    .expireAfterAccess(3, TimeUnit.MINUTES)     // 3 minutes to expire
                     .build();
         }
 
