@@ -33,7 +33,7 @@ class JCommandListener implements TabCompleter, CommandExecutor {
         for (Node child : node.getChildren()) {
             if (!meetsCommandRequirements(sender, child)) continue;
 
-            for (String suggestion : child.getLabel().getSuggestions())
+            for (String suggestion : child.getLabel().getSuggestions(sender))
                 if (StringUtils.startsWithIgnoreCase(suggestion, (args[args.length - 1])))
                     tabCompletes.add(suggestion);
         }
@@ -49,7 +49,7 @@ class JCommandListener implements TabCompleter, CommandExecutor {
 
     private boolean meetsPerms(CommandSender sender, Node node) {
         if (node.getPermissions() == null || node.getPermissions().isEmpty()) return true;
-        return node.getPermissions().stream().allMatch(sender::hasPermission);
+        return node.getPermissions().stream().filter(Objects::nonNull).allMatch(sender::hasPermission);
     }
 
     @Override

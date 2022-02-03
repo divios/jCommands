@@ -108,6 +108,7 @@ public class TreeMap {
             Node child = new Node(new StringArgument(subCommand.getName())
                     .overrideSuggestions(() -> Collections.singletonList(subCommand.getName()), true),
                     subCommand);
+            child.addPermission(node.getPermissions());     // Add parent perms
             node.addChildren(child);
             processChildren(child, subCommand);
         }

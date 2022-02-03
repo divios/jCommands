@@ -3,22 +3,23 @@ package io.github.divios.jcommands.maptree;
 import io.github.divios.jcommands.JCommand;
 import io.github.divios.jcommands.arguments.Argument;
 
-import org.bukkit.permissions.Permission;
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class Node {
 
     private final Argument label;
     private final JCommand command;
     private Node parent;
     private List<Node> children;
-    private final Set<Permission> permissions;
+    private final Set<String> permissions;
 
     Node(Argument label, JCommand command) {
         this.label = label;
         this.command = command;
         this.children = new ArrayList<>();
         this.permissions = new HashSet<>();
+        permissions.add(command.getPermission());
     }
 
     Node(Argument label, JCommand command, Node parent) {
@@ -41,11 +42,11 @@ public class Node {
         this.children.addAll(children);
     }
 
-    public void addPermission(Permission permission) {
+    public void addPermission(String permission) {
         permissions.add(permission);
     }
 
-    public void addPermission(Collection<Permission> permissions) {
+    public void addPermission(Collection<String> permissions) {
         this.permissions.addAll(permissions);
     }
 
@@ -61,7 +62,7 @@ public class Node {
         return children;
     }
 
-    public Set<Permission> getPermissions() {
+    public Set<String> getPermissions() {
         return permissions;
     }
 

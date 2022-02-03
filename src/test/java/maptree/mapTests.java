@@ -258,6 +258,32 @@ public class mapTests {
 
     }
 
+    @Test
+    public void testPermissions() {
+        TreeMap treeMap = new TreeMap();
+        JCommand test = new JCommand("test")
+                .assertPermission("test.perm")
+                .withSubcommands(
+                        JCommand.create("restock")
+                                .assertPermission("test.perm.restock")
+                                .withArguments(new StringArgument("shop")
+                                        .overrideSuggestions(() -> Arrays.asList("blocks", "drops", "--all", "farm"))
+                                )
+                                .executes((sender, valueMap) -> System.out.println(valueMap.get("shop").getAsString()))
+                ).withSubcommands(
+                        JCommand.create("sub2")
+                                .assertPermission("test.perm.sub2")
+                );
+
+        Assert.assertEquals("test.perm", test.getPermission());
+        treeMap.put(test);
+
+        Node node = treeMap.search("test", new String[]{"restock", "shop"});
+        Assert.assertNotNull(node);
+        Assert.assertEquals(new HashSet<>(Arrays.asList("test.perm.restock", "test.perm")), node.getPermissions());
+
+    }
+
     private ValueMap wrapArgs(JCommand command, String[] args) {
 
         Map<String, Value> valueMap = new LinkedHashMap<>();
