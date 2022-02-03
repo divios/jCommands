@@ -9,7 +9,6 @@ import io.github.divios.jcommands.maptree.util.CollectionUtil;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class TreeMap {
@@ -88,7 +87,7 @@ public class TreeMap {
         buffer.append(prefix);
         buffer.append(node.getLabel().getName());
         buffer.append('\n');
-        for (Iterator<Node> it = node.getChildren().iterator(); it.hasNext();) {
+        for (Iterator<Node> it = node.getChildren().iterator(); it.hasNext(); ) {
             Node next = it.next();
             if (it.hasNext()) {
                 print(next, buffer, childrenPrefix + "├── ", childrenPrefix + "│   ");
@@ -123,21 +122,20 @@ public class TreeMap {
                     CollectionUtil.concat((strings == null) ? new ArrayList<>() : strings, child)
             );
 
-        /*similarNodes.values().forEach(nodes -> {
+        /*similarNodes.values().forEach(nodes -> {      // Debug method to print values
             System.out.println(Arrays.toString(nodes.stream()
                     .map(node1 -> node1.getLabel().getName())
                     .toArray()));
         }); */
 
         for (List<Node> value : similarNodes.values()) {
-            if (value.size() == 1) {        // If no similar children then just add and continue
-                finalChildren.add(value.get(0));
-                continue;
-            }
-
-            Node root = minHeightNode(value);
-            for (Node node1 : CollectionUtil.remove(value, root)) {
-                root.addChildren(node1.getChildren());
+            Node root;
+            if (value.size() == 1) {        // If no similar children then just add the node
+                root = value.get(0);
+            } else {
+                root = minHeightNode(value);
+                for (Node node1 : CollectionUtil.remove(value, root))
+                    root.addChildren(node1.getChildren());
             }
             reduceNode(root);
             finalChildren.add(root);
