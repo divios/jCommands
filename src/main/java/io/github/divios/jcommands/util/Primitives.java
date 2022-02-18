@@ -84,7 +84,7 @@ public class Primitives {
 
     public static boolean isPlayer(String s) {
         return Bukkit.getOnlinePlayers().stream()
-                .anyMatch(player -> ChatColor.stripColor(player.getDisplayName()).equalsIgnoreCase(s));
+                .anyMatch(player -> player.getName().equalsIgnoreCase(s));
     }
 
     public static Player getAsPlayer(String s) {

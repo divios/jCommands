@@ -78,12 +78,23 @@ class JCommandListener implements TabCompleter, CommandExecutor {
         Map<String, Value> valueMap = new LinkedHashMap<>();
         List<Argument> arguments = command.getArguments();
 
-        String[] validArgs = Arrays.copyOfRange(args, ArrayUtils.indexOf(args, command.getName()) + 1, args.length);
+        String[] validArgs = Arrays.copyOfRange(args, indexOf(args, command.getName()) + 1, args.length);
 
         for (int i = 0; i < arguments.size(); i++)
             valueMap.put(arguments.get(i).getName(), Value.ofString(validArgs[i]));
 
         return ValueMap.of(valueMap);
+    }
+
+    private int indexOf(String[] args, String s) {
+        int i = 0;
+        for (String arg : args) {
+            if (arg.equalsIgnoreCase(s))
+                return i;
+            i++;
+        }
+
+        return -1;
     }
 
 }
