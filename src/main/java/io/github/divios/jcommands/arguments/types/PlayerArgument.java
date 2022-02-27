@@ -16,7 +16,7 @@ public class PlayerArgument extends abstractArgument<Player> {
 
     public PlayerArgument(String name) {
         super(name, () -> Bukkit.getOnlinePlayers().stream()
-                .map(player -> ChatColor.stripColor(player.getDisplayName()))
+                .map(Player::getName)
                 .collect(Collectors.toList()));
         super.setAsImperative();
     }
