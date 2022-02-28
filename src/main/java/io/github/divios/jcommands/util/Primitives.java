@@ -88,10 +88,9 @@ public class Primitives {
     }
 
     public static Player getAsPlayer(String s) {
-        Preconditions.checkArgument(isPlayer(s), "Invalid Player");
         return Bukkit.getOnlinePlayers().stream()
-                .filter(player -> ChatColor.stripColor(player.getDisplayName()).equalsIgnoreCase(s))
-                .findFirst().orElse(null);
+                .filter(player -> player.getName().equalsIgnoreCase(s))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("Invalid player"));
     }
 
     private static boolean testCast(Runnable runnable) {
