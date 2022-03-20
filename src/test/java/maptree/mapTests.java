@@ -9,10 +9,12 @@ import io.github.divios.jcommands.maptree.TreeMap;
 import io.github.divios.jcommands.util.Value;
 import io.github.divios.jcommands.util.ValueMap;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.Validate;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class mapTests {
@@ -92,7 +94,7 @@ public class mapTests {
 
         System.out.println(treeMap);
 
-        List<String> suggestions = treeMap.search(label, Arrays.copyOfRange(args, 0, args.length - 1)).getChildren().stream()
+        List<String> suggestions = treeMap.search(label, Arrays.copyOfRange(args, 0, 0)).getChildren().stream()
                 .map(node -> node.getLabel().getSuggestions())
                 .reduce(new ArrayList<>(), (strings, strings2) -> {
                     strings.addAll(strings2);
@@ -133,7 +135,99 @@ public class mapTests {
     }
 
     @Test
-    public void testSimilarSubcommands() {
+    public void testSubCommands3() {
+        TreeMap treeMap = new TreeMap();
+        JCommand test = new JCommand("test")
+                .withSubcommands(
+                        JCommand.create("sub1")
+                                .withArguments(new StringArgument("")
+                                        .overrideSuggestions(() -> Arrays.asList("ok", "ok3"))
+                                )
+                ).withSubcommands(
+                        JCommand.create("sub2")
+                );
+        treeMap.put(test);
+
+        String label = "test";
+        String[] args = new String[]{"suB1", ""};
+
+        List<String> suggestions = new ArrayList<>();
+
+        for (Node child : treeMap.search(label, Arrays.copyOfRange(args, 0, args.length - 1)).getChildren()) {
+            //if (!meetsCommandRequirements(sender, child.getCommand())) continue;
+
+            for (String suggestion : child.getLabel().getSuggestions())
+                if (suggestion.startsWith(args[args.length - 1]))
+                    suggestions.add(suggestion);
+        }
+
+        Assert.assertEquals(Arrays.asList("ok", "ok3"), suggestions);
+    }
+
+    @Test
+    public void testParentEmptyAction() {
+        TreeMap treeMap = new TreeMap();
+
+        AtomicBoolean action = new AtomicBoolean(false);
+        JCommand test = new JCommand("test")
+                .withSubcommands(
+                        JCommand.create("restock")
+                                .withArguments(new StringArgument("oks"), new StringArgument("shop"))
+                                .executes((sender, valueMap) -> action.set(true))
+                ).withSubcommands(
+                        JCommand.create("sub2")
+                );
+        treeMap.put(test);
+
+        String label = "test";
+        String[] args = new String[]{"restock"};
+
+        Node node = treeMap.search(label, args);
+        Validate.notNull(node);
+
+        node.getCommand().getDefaultExecutor().accept(null, null);
+        Validate.isTrue(!action.get());     // The parent should have an empty action, is delegated to children
+
+        node = treeMap.search(label, new String[]{"restock", "ok"});
+        node.getCommand().getDefaultExecutor().accept(null, null);
+        Validate.isTrue(!action.get());     // should have empty too
+
+        node = treeMap.search(label, new String[]{"restock", "ok", "drops"});
+        node.getCommand().getDefaultExecutor().accept(null, null);
+        Validate.isTrue(action.get());
+    }
+
+    @Test
+    public void testParentEmptyAction2() {
+        TreeMap treeMap = new TreeMap();
+
+        AtomicBoolean action = new AtomicBoolean(false);
+        JCommand test = new JCommand("test")
+                .withSubcommands(
+                        JCommand.create("reStock")
+                                .withArguments(new StringArgument("oks"))
+                                .executes((sender, valueMap) -> action.set(true))
+                ).withSubcommands(
+                        JCommand.create("sub2")
+                );
+        treeMap.put(test);
+
+        String label = "test";
+        String[] args = new String[]{"reStock"};
+
+        Node node = treeMap.search(label, args);
+        Validate.notNull(node);
+
+        node.getCommand().getDefaultExecutor().accept(null, null);
+        Validate.isTrue(!action.get());     // The parent should have an empty action, is delegated to children
+
+        node = treeMap.search(label, new String[]{"reStock", "ok"});
+        node.getCommand().getDefaultExecutor().accept(null, null);
+        Validate.isTrue(action.get());     // should have empty too
+    }
+
+    @Test
+    public void testTreeReduce() {
         TreeMap treeMap = new TreeMap();
         AtomicInteger testValue = new AtomicInteger();
         JCommand test = new JCommand("test")
@@ -280,7 +374,7 @@ public class mapTests {
 
         Node node = treeMap.search("test", new String[]{"restock", "shop"});
         Assert.assertNotNull(node);
-        Assert.assertEquals(new HashSet<>(Arrays.asList("test.perm.restock", "test.perm")), node.getPermissions());
+        Arrays.asList("test.perm.restock", "test.perm").forEach(s -> Validate.isTrue(node.getPermissions().contains(s)));
 
     }
 
