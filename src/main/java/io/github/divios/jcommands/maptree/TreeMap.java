@@ -163,6 +163,7 @@ public class TreeMap {
             current = child;
         }
         cloneActions(current.getCommand(), to.getCommand());  // Set the action to the last node
+        // clearActions(to.getCommand()); Does not work for some reason
         return current;     // Returns the last node on the chain
     }
 
@@ -171,6 +172,13 @@ public class TreeMap {
         to.executes(from.getDefaultExecutor());
         to.executesPlayer(from.getPlayerExecutor());
         to.executesConsole(from.getConsoleExecutor());
+    }
+
+    private void clearActions(JCommand command) {
+        System.out.println("Cleaned actions of " + command.getName());
+        command.executes((sender, valueMap) -> {});
+        command.executesPlayer((player, valueMap) -> {});
+        command.executesConsole((consoleCommandSender, valueMap) -> {});
     }
 
     private JCommand cloneWithOutAction(JCommand command) {

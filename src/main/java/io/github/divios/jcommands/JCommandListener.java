@@ -64,12 +64,14 @@ class JCommandListener implements TabCompleter, CommandExecutor {
 
         // TODO: get last valid parent and send usage
 
+        ValueMap argsMap = wrapArgs(node.getCommand(), args);
+
         if (sender instanceof Player)
-            node.getCommand().getPlayerExecutor().accept((Player) sender, wrapArgs(node.getCommand(), args));
+            node.getCommand().getPlayerExecutor().accept((Player) sender, argsMap);
         else if (sender instanceof ConsoleCommandSender)
-            node.getCommand().getConsoleExecutor().accept((ConsoleCommandSender) sender, wrapArgs(node.getCommand(), args));
+            node.getCommand().getConsoleExecutor().accept((ConsoleCommandSender) sender, argsMap);
         else
-            node.getCommand().getDefaultExecutor().accept(sender, wrapArgs(node.getCommand(), args));
+            node.getCommand().getDefaultExecutor().accept(sender, argsMap);
 
         return true;
     }
@@ -81,7 +83,7 @@ class JCommandListener implements TabCompleter, CommandExecutor {
         String[] validArgs = Arrays.copyOfRange(args, indexOf(args, command.getName()) + 1, args.length);
 
         for (int i = 0; i < arguments.size(); i++)
-            valueMap.put(arguments.get(i).getName(), Value.ofString(validArgs[i]));
+            valueMap.put(arguments.get(i).getName(), (i < validArgs.length) ? Value.ofString(validArgs[i]) : Value.ofString(""));
 
         return ValueMap.of(valueMap);
     }
